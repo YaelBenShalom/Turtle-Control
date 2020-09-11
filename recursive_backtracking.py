@@ -1,3 +1,5 @@
+import copy
+
 class RBT:
     def __init__(self, M, N, maze, start, goal):
         self.M = M
@@ -5,7 +7,7 @@ class RBT:
         self.maze = maze
         self.start = start
         self.goal = goal
-        self.solution = maze
+        self.solution = copy.deepcopy(maze)
         self.nos = 0
 
     def isFree(self, cell):

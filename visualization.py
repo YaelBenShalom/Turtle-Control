@@ -29,10 +29,10 @@ class Maze:
                     display.blit(goalImage, (x*50, y*50))
                 # draw robot by step
                 if step > self.nos:
-                    if self.maze[y][x] == self.nos:
+                    if self.solution[y][x] == self.nos:
                         display.blit(robotImage, (x*50, y*50))
                 else:
-                    if self.maze[y][x] == step:
+                    if self.solution[y][x] == step:
                         display.blit(robotImage, (x*50, y*50))
 
             x += 1
