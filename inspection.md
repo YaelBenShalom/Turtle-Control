@@ -110,6 +110,5 @@ Unless otherwise specified, list the command and all arguments that you passed t
 14. What is the value of the `/mover/velocity` parameter? <5>
 15. What happens to the turtle if you change `/mover/velocity` to 10? <nothing>
 16. Use the ROS command `rosnode kill /mover` to kill the `/mover` node.
-17. Use the ROS command `roslaunch` to start the `/mover` node. Be sure to
-    remap `cmd_vel` to `/turtle1/cmd_vel`.
+17. Use the ROS command `rosrun crazy_turtle mover cvd_vel:=/turtle1/cmd_vel` to start the `/mover` node. Be sure to remap `cmd_vel` to `/turtle1/cmd_vel`.
 18. What happened to the turtle's velocity after relaunching `mover`? <same>
