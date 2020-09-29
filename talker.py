@@ -51,6 +51,7 @@ def talker():
         count = count + 1
         message = TurtleVel(1.0,1.0)
         message = TurtleVel(uniform(-1, 1),uniform(-20, 20)) #TODO remove
+        message = TurtleVel(10,10) #TODO remove
         if(count<15):
             message = TurtleVel(1.0,0.0)    
         

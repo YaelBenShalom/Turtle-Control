@@ -1,0 +1,6 @@
+<launch>
+   <node name="roaming_turtle" pkg="turtlesim" type="turtlesim_node" />
+   <node name="turtle_interpret" pkg="turtle_control" type="turtle_interpret" />
+   <node name="waypoint" pkg="turtle_control" type="waypoint">
+   </node>
+</launch>

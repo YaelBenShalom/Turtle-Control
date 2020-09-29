@@ -10,10 +10,9 @@ SUBSCRIBES:
 import rospy
 from turtle_control.msg import TurtleVel
 from turtle_control.srv import VelTranslate
-from geometry_msgs.msg import Twist , Vector3
-from turtlesim.srv import Spawn, SpawnRequest
+from geometry_msgs.msg import Twist, Vector3
+from turtlesim.srv import Spawn, SpawnRequest, Kill
 from crazy_turtle.srv import Switch, SwitchResponse
-from turtlesim.srv import Kill
 from random import uniform
 
 
@@ -37,9 +36,9 @@ class Turtle_Interpret:
     """ Publishes movement geometry_msgs/Twist commands at a fixed rate 
     """
     def __init__(self):
-        self.sub = rospy.Subscriber("turtle_vel", TurtleVel, self.turtle_vel_callback)
-        self.pub = rospy.Publisher('cmd_vel', Twist, queue_size = 10)
-        self.serv = rospy.Service("vel_translate", VelTranslate, self.vel_translate_callback)
+        self.sub = rospy.Subscriber("/turtle1/turtle_vel", TurtleVel, self.turtle_vel_callback)
+        self.pub = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size = 10)
+        self.serv = rospy.Service("/turtle1/vel_translate", VelTranslate, self.vel_translate_callback)
 
     def turtle_vel_callback(self, data):
         rospy.logdebug(f"Message: {data}")

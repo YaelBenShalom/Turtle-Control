@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+
+import os
+import rospy
+import numpy
+import yaml
+import math
+import rosparam
+from turtle_control.msg import TurtleVel
+from turtle_control.srv import VelTranslate
+from geometry_msgs.msg import Twist, Vector3
+from turtlesim.srv import Spawn, SpawnRequest, SetPen, TeleportAbsolute, Kill
+from turtlesim.msg import Pose
+from crazy_turtle.srv import Switch, SwitchResponse
+from std_srvs.srv import Empty
+from random import uniform
+
+
+class WayPoint:
+
+    def __init__(self):
+
+        self.clear = rospy.ServiceProxy("/clear", Empty)
+        self.kill = rospy.ServiceProxy("/kill", Kill)        
+        self.reset()
+        self.turtle_pose = None
+        rospy.logdebug(f"cwd publish: {os.getcwd()}")
+        config_path = os.path.join('/home/yael//Documents//MSR_Courses//MECH_ENG_495//HW//HW1//ws', 'src', 'turtle_control', 'config', 'waypoint.yaml') #TODO 
+
+        point_list_raw = rosparam.load_file(config_path)
+        self.point_list = point_list_raw[0][0]['waypoint']['waypoints']
+
+        self.dist_thresh = 0.2 #TODO 
+        rospy.set_param("~dist_thresh", self.dist_thresh)
+        self.sub = rospy.Subscriber("/turtle1/pose", Pose, self.pose_callback)
+        self.pub = rospy.Publisher("/turtle1/turtle_vel", TurtleVel, queue_size = 10)
+
+        self.spawn = rospy.ServiceProxy("/spawn", Spawn)
+        self.spawn(0, 0, 0, "mark")
+        self.setting_pen = rospy.ServiceProxy("mark/set_pen", SetPen)
+        self.teleporting_mark = rospy.ServiceProxy("mark/teleport_absolute", TeleportAbsolute)
+ 
+        margin = 0.1
+        for i in range(len(self.point_list)-1, -1, -1):
+            point = self.point_list[i]
+            self.mark_pose = point
+            self.setting_pen(0, 0, 0, 1, 1)
+            self.teleporting_mark(point[0] + margin, point[1] + margin, 0)
+            self.setting_pen(0, 0, 0, 1, 0)
+            self.teleporting_mark(point[0] - margin, point[1] - margin, 0)
+            self.setting_pen(0, 0, 0, 1, 1)
+            self.teleporting_mark(point[0] + margin, point[1] - margin, 0)
+            self.setting_pen(0, 0, 0, 1, 0)
+            self.teleporting_mark(point[0] - margin, point[1] + margin, 0)
+        self.counter_mark_pos = 0
+        self.rate = rospy.Rate(10) # 10hz
+
+
+    def pose_callback(self, data):
+        self.turtle_pose = data
+
+
+    def move_turtle1(self):
+        dy = self.point_list[self.counter_mark_pos][1] - self.turtle_pose.y
+        dx = self.point_list[self.counter_mark_pos][0] - self.turtle_pose.x
+        theta = math.atan2(dy, dx)
+        angular = theta * 0.1
+        message = TurtleVel(1.0,angular)
+        rospy.logdebug(f"Message publish: {message}")
+        self.pub.publish(message)
+        self.rate.sleep()
+
+
+    def teleport_mark(self):
+        if self.counter_mark_pos == len(self.point_list)-1:
+            self.counter_mark_pos = 0
+        else:
+            self.counter_mark_pos += 1
+        self.teleporting_mark(self.point_list[self.counter_mark_pos][0], self.point_list[self.counter_mark_pos][1], 0)
+
+    
+
+    def run(self):
+        while True:
+            self.move_turtle1()
+            if self.turtle_pose and math.dist([self.turtle_pose.x, self.turtle_pose.y], self.point_list[self.counter_mark_pos]) < self.dist_thresh:
+                self.teleport_mark()
+
+
+    def reset(self):
+        self.clear()
+        try:
+            self.kill("mark")
+        except:
+            pass
+
+
+def main():
+    """ The main() function. """
+    rospy.init_node('waypoint', log_level=rospy.DEBUG)
+    # rospy.init_node('waypoint')
+    way_point = WayPoint()
+    way_point.run()
+    rospy.spin()
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass

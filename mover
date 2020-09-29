@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # Copy this file into your homework repository and fill in the <> blanks in the document strings
 """ 
-Publishes twist that will move a robot back and forth in the <?> direction 
-while randomly providing a <linear|angular> velocity about the <?>-axis.
+Publishes twist that will move a robot back and forth in the x direction 
+while randomly providing a <angular> velocity about the Z-axis.
 
 PUBLISHERS:
-  + <name> (<type>) ~ the velocity of an erratic turtle path
+  + cmd_vel (Twist) ~ the velocity of an erratic turtle path
 
 SERVICES:
-  + <name> (<type>) ~ position of the new turtle
+  + switch (Switch) ~ position of the new turtle
 
 """
 

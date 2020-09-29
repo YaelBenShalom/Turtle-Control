@@ -1,0 +1,29 @@
+Setup:
+source devel/setup.bash
+catkin_lint -W2
+rosmsg info turtle_control/TurtleVel
+
+
+Run:
+roscore
+catkin_make
+rosrun turtle_control turtle_interpret
+roslaunch turtle_control waypoint_follow.launch
+
+
+Tests:
+rosrun turtle_control talker.py
+rosrun turtle_control turtle_interpret
+rostopic echo /turtle1/cmd_vel
+rostopic pub /turtle_vel turtle_control/TurtleVel 4 5
+rostopic echo /turtle_vel
+rosservice call /vel_translate
+
+rqt_console
+
+
+Git:
+git status
+git add *
+git commit -m "..."
+git push origin master
