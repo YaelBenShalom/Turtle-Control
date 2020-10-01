@@ -30,6 +30,13 @@ rqt_graph
 ps aux | grep ros
 kill -9 21408 (the # of the service)
 
+recording:
+cd ~/bagfiles
+roscore
+rosrun turtlesim turtlesim_node
+rosbag record -O subset /turtle1/cmd_vel
+rosbag play subset.bag
+
 Git:
 git status
 git add *
