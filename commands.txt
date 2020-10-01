@@ -1,26 +1,34 @@
 Setup:
+cd ~/Documents/MSR_Courses/MECH_ENG_495/HW/HW1/ws
 source devel/setup.bash
 catkin_lint -W2
 rosmsg info turtle_control/TurtleVel
 
 
 Run:
-roscore
-catkin_make
-rosrun turtle_control turtle_interpret
 roslaunch turtle_control waypoint_follow.launch
 
 
 Tests:
-rosrun turtle_control talker.py
+roscore
+catkin_make
+rosrun turtlesim turtlesim_node
 rosrun turtle_control turtle_interpret
+rosrun turtle_control talker.py
+
 rostopic echo /turtle1/cmd_vel
 rostopic pub /turtle_vel turtle_control/TurtleVel 4 5
 rostopic echo /turtle_vel
 rosservice call /vel_translate
+rosmsg info turtlesim/Pose
+
+tail -f ~/.ros/log/latest/waypoint-4.log
 
 rqt_console
+rqt_graph
 
+ps aux | grep ros
+kill -9 21408 (the # of the service)
 
 Git:
 git status

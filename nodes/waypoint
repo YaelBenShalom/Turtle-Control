@@ -15,6 +15,7 @@ from crazy_turtle.srv import Switch, SwitchResponse
 from std_srvs.srv import Empty
 from random import uniform
 
+#TODO - Add notes and documentation
 
 class WayPoint:
 
@@ -30,16 +31,18 @@ class WayPoint:
         point_list_raw = rosparam.load_file(config_path)
         self.point_list = point_list_raw[0][0]['waypoint']['waypoints']
 
-        self.dist_thresh = 0.2 #TODO 
+        self.dist_thresh = 0.4
         rospy.set_param("~dist_thresh", self.dist_thresh)
         self.sub = rospy.Subscriber("/turtle1/pose", Pose, self.pose_callback)
         self.pub = rospy.Publisher("/turtle1/turtle_vel", TurtleVel, queue_size = 10)
-
+        rospy.wait_for_service("/spawn")
         self.spawn = rospy.ServiceProxy("/spawn", Spawn)
         self.spawn(0, 0, 0, "mark")
-        self.setting_pen = rospy.ServiceProxy("mark/set_pen", SetPen)
-        self.teleporting_mark = rospy.ServiceProxy("mark/teleport_absolute", TeleportAbsolute)
- 
+        rospy.wait_for_service("/mark/set_pen")
+        rospy.wait_for_service("/mark/teleport_absolute")
+        self.setting_pen = rospy.ServiceProxy("/mark/set_pen", SetPen)
+        self.teleporting_mark = rospy.ServiceProxy("/mark/teleport_absolute", TeleportAbsolute)
+
         margin = 0.1
         for i in range(len(self.point_list)-1, -1, -1):
             point = self.point_list[i]
@@ -52,6 +55,7 @@ class WayPoint:
             self.teleporting_mark(point[0] + margin, point[1] - margin, 0)
             self.setting_pen(0, 0, 0, 1, 0)
             self.teleporting_mark(point[0] - margin, point[1] + margin, 0)
+            self.teleporting_mark(point[0], point[1], 0)
         self.counter_mark_pos = 0
         self.rate = rospy.Rate(10) # 10hz
 
@@ -63,10 +67,11 @@ class WayPoint:
     def move_turtle1(self):
         dy = self.point_list[self.counter_mark_pos][1] - self.turtle_pose.y
         dx = self.point_list[self.counter_mark_pos][0] - self.turtle_pose.x
-        theta = math.atan2(dy, dx)
-        angular = theta * 0.1
+        atan = math.atan2(dy, dx)
+        dtheta = atan - self.turtle_pose.theta
+        angular = dtheta * 2
         message = TurtleVel(1.0,angular)
-        rospy.logdebug(f"Message publish: {message}")
+        rospy.logdebug(f"Message publish: {atan, dx, dy, dtheta, self.turtle_pose.x, self.turtle_pose.y, self.turtle_pose.theta, message}")
         self.pub.publish(message)
         self.rate.sleep()
 
@@ -91,6 +96,7 @@ class WayPoint:
         self.clear()
         try:
             self.kill("mark")
+            # rospy.logdebug(f"Message publish: {OMG you killed Mark! you bastard!}")
         except:
             pass
 
