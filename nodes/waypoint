@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+causes turtle1 to follow a series of waypoints (stored as a list of (x,y)
+positions). When the turtle reaches the last waypoint it should head to
+the first waypoint and restart the cycle.
+"""
+
 import os
 import rospy
 import numpy
@@ -15,7 +21,6 @@ from crazy_turtle.srv import Switch, SwitchResponse
 from std_srvs.srv import Empty
 from random import uniform
 
-#TODO - Add notes and documentation
 
 class WayPoint:
 
@@ -26,7 +31,7 @@ class WayPoint:
         self.reset()
         self.turtle_pose = None
         rospy.logdebug(f"cwd publish: {os.getcwd()}")
-        config_path = os.path.join('/home/yael//Documents//MSR_Courses//MECH_ENG_495//HW//HW1//ws', 'src', 'turtle_control', 'config', 'waypoint.yaml') #TODO 
+        config_path = os.path.join('/home/yael//Documents//MSR_Courses//MECH_ENG_495//HW//HW1//ws', 'src', 'turtle_control', 'config', 'waypoint.yaml')
 
         point_list_raw = rosparam.load_file(config_path)
         self.point_list = point_list_raw[0][0]['waypoint']['waypoints']
@@ -61,10 +66,18 @@ class WayPoint:
 
 
     def pose_callback(self, data):
+        """ Store the position of turtle1
+
+         Args:
+          data (SwitchRequest): the position of turtle1
+        """
         self.turtle_pose = data
 
 
     def move_turtle1(self):
+        """ moving turtle1 toward Mark the turtle - publish a TurtleVel
+        message on the turtle_vel topic to control the turtle.
+        """
         dy = self.point_list[self.counter_mark_pos][1] - self.turtle_pose.y
         dx = self.point_list[self.counter_mark_pos][0] - self.turtle_pose.x
         atan = math.atan2(dy, dx)
@@ -77,6 +90,8 @@ class WayPoint:
 
 
     def teleport_mark(self):
+        """ teleport Mark the turtle to the next point on waypoint.yaml
+        """
         if self.counter_mark_pos == len(self.point_list)-1:
             self.counter_mark_pos = 0
         else:
@@ -86,6 +101,9 @@ class WayPoint:
     
 
     def run(self):
+        """ a function purpose to move turtle1 toward Mark thr turtle, and teleport
+        Mark to the next point on waypoint.yaml when turtle1 is getting close.
+        """
         while True:
             self.move_turtle1()
             if self.turtle_pose and math.dist([self.turtle_pose.x, self.turtle_pose.y], self.point_list[self.counter_mark_pos]) < self.dist_thresh:
@@ -93,6 +111,8 @@ class WayPoint:
 
 
     def reset(self):
+        """ Reset function to kill Mark the turtle and clear the GUI
+        """
         self.clear()
         try:
             self.kill("mark")

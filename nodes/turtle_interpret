@@ -30,22 +30,41 @@ def turtle_twist(xdot, omega):
     return Twist(linear = Vector3(x = xdot, y = 0, z = 0),
                   angular = Vector3(x = 0, y = 0, z = omega))
 
-#TODO - update comments
 
 class Turtle_Interpret:
-    """ Publishes movement geometry_msgs/Twist commands at a fixed rate 
-    """
+
     def __init__(self):
         self.sub = rospy.Subscriber("/turtle1/turtle_vel", TurtleVel, self.turtle_vel_callback)
         self.pub = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size = 10)
         self.serv = rospy.Service("/turtle1/vel_translate", VelTranslate, self.vel_translate_callback)
 
+
     def turtle_vel_callback(self, data):
+        """ Callback function for turtle_vel topic
+        Subscribes to a topic turtle_vel, listening for TurtleVel messages. 
+        The subscriber log the input as a debug level message and publishes
+        a corresponding geometry_msgs/Twist on cmd_vel.
+        
+        Args:
+          data from the subscricber
+        """
+
         rospy.logdebug(f"Message: {data}")
         twist = turtle_twist(data.linear, data.angular)
         self.pub.publish(twist)
 
+
     def vel_translate_callback (self, twist_msg):
+        """ Callback function for vel_translate service
+        converts a geometry_msgs/Twist into a TurtleVel message and returns it.
+        
+        Args:
+          twist_msg
+
+        Returns:
+            TurtleVel message
+        """
+
         if twist_msg.twist.linear.y != 0 or twist_msg.twist.linear.z != 0 or twist_msg.twist.angular.x != 0 or twist_msg.twist.angular.y != 0:
             return None
         return TurtleVel(linear = twist_msg.twist.linear.x, angular = twist_msg.twist.angular.z)
