@@ -7,15 +7,15 @@ Unless otherwise specified, list the command and all arguments that you passed t
 
 ## Setup Instructions
 1. Compile the workspace by executing `catkin_make`
-2. Initialize the ROS environment by exectuing `roscore`
-3. Run the launchfile `turtlesim_node` by executing `rosrun turtlesim turtlesim_node`
+2. Initialize the ROS environment by exectuing `roscore` [source devel/setup.bash]
+3. Run the launchfile `turtlesim_node` by executing `rosrun turtlesim turtlesim_node` [the launchfile is `roslaunch crazy_turtle go_crazy_turtle.launch`]
 4. When running you can see a visual depiction of the ROS graph using the `rqt_graph` command.
    The ROS graph, including all topics and node labels, looks like:
    ![~/Documents/MSR_Courses/MECH_ENG_495/HW/HW1/ws/src/turtle_control/rosgraph.png](<path_to_image_here_include_image_in_your_repository>)
 
 ## Runtime Information
 5. Use the ROS command `rosnode list` to list all the nodes that are running.
-   The output of the command looks like
+   The output of the command looks like (because you did not run the launchfile, the turtlesim node was not running at this stage)
    ```
    /mover
    /roaming_turtle
@@ -32,7 +32,7 @@ Unless otherwise specified, list the command and all arguments that you passed t
    ```
 
 7. Use the ROS command `rostopic hz /turtle1/cmd_vel` to verify that the frequency 
-   of the `/turtle1/cmd_vel` topic is `60 Hz`
+   of the `/turtle1/cmd_vel` topic is `60 Hz` (should be 100Hz, but this can be affected by other things running on your computer)
 
 8. Use the ROS command `rosservice list` to list the services.
    The output of the command looks like
@@ -85,7 +85,7 @@ Unless otherwise specified, list the command and all arguments that you passed t
    turtlesim
    ```
 12. Use the ROS command `rosservice list | xargs -L1 rosservice type` to list the types of services defined by `crazy_turtle`
-   The output of the command looks like
+   The output of the command looks like [this is listing the types of all services, you are looking for `rossrv package crazy_turtle`
    ```
    std_srvs/Empty
    turtlesim/Kill
@@ -111,4 +111,4 @@ Unless otherwise specified, list the command and all arguments that you passed t
 15. What happens to the turtle if you change `/mover/velocity` to 10? <nothing>
 16. Use the ROS command `rosnode kill /mover` to kill the `/mover` node.
 17. Use the ROS command `rosrun crazy_turtle mover cvd_vel:=/turtle1/cmd_vel` to start the `/mover` node. Be sure to remap `cmd_vel` to `/turtle1/cmd_vel`.
-18. What happened to the turtle's velocity after relaunching `mover`? <same>
+18. What happened to the turtle's velocity after relaunching `mover`? <same> [it should be faster]
