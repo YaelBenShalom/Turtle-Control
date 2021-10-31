@@ -13,7 +13,7 @@ This package lets the simulated turtle follow a series of waypoints. The package
 The turtle chases after another turtle (Mark), and when he's close to catch him, Mark transports himself to the next waypoint.
 
 
-# Getting Started
+## Getting Started
 
 Create a workspace, clone the repo, and build the workspace:
 ```
@@ -27,7 +27,7 @@ source devel/setup.bash
 
 ## Usage and Configuration Instructions
 
-1. To start running the turtlebot in figure-eight trajectory, run `roslaunch turtle_control waypoint_follow.launch`.
+To start running the turtlebot in figure-eight trajectory, run `roslaunch Turtle-Control waypoint_follow.launch`.
 
 <p align="center">
   <img align="center" src="https://github.com/YaelBenShalom/Turtle-Control/blob/master/GIFs/turtle%20race%20-%20HW1.gif">
